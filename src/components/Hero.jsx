@@ -139,7 +139,7 @@ const Hero = () => {
 					loop
 					muted
 					id="next-video"
-					className="absolute-center invisible z-20 size-64 object-cover object-center"
+					className="absolute object-cover object-center absolute-center invisible z-20 size-64"
 					onLoadedData={handleVideoLoad}
 				></video>
 
@@ -148,9 +148,9 @@ const Hero = () => {
 					autoPlay
 					loop
 					muted
-					className={`absolute left-0 top-0 size-full object-cover object-center ${isCurrentIndexEven ? 'invisible' : ''}`}
+					className={`absolute object-cover object-center left-0 top-0 size-full  ${isCurrentIndexEven ? 'invisible' : ''}`}
 					onLoadedData={handleVideoLoad}
-					id="odd-bg-video"
+					id="bg-video"
 				></video>
 
 				<video
@@ -158,9 +158,9 @@ const Hero = () => {
 					autoPlay
 					loop
 					muted
-					className={`absolute left-0 top-0 size-full object-cover object-center ${isCurrentIndexEven ? '' : 'invisible'}`}
+					className={`absolute object-cover object-center left-0 top-0 size-full  ${isCurrentIndexEven ? '' : 'invisible'}`}
 					onLoadedData={handleVideoLoad}
-					id="even-bg-video"
+					id="bg-video"
 				></video>
 
 				<h1 className="special-font hero-heading absolute bottom-5 right-5 z-40 text-blue-50">
