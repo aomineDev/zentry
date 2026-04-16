@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { TiLocationArrow } from 'react-icons/ti'
 import Button from './Button'
 import { useGSAP } from '@gsap/react'
@@ -14,10 +14,11 @@ const Hero = () => {
 	const [loadedVideos, setLoadedVideos] = useState(0)
 
 	const [oddBgIndex, setOddBgIndex] = useState(1)
-	const [evenBgIndex, setEvenBgIndex] = useState(1)
+	const [evenBgIndex, setEvenBgIndex] = useState(2)
 	const [isCurrentIndexEven, setIsCurrentIndexEven] = useState(false)
 
-	const nextVideoRef = useRef(null)
+	const evenVideoRef = useRef(null)
+	const oddVideoRef = useRef(null)
 
 	const totalVideos = 4
 
@@ -25,75 +26,60 @@ const Hero = () => {
 
 	const upcomingVideoIndex = (currentIndex % totalVideos) + 1
 
-	const handleVideoLoad = () => {
-		setLoadedVideos((prev) => prev + 1)
-
-		updateIsLoading()
-	}
-
-	const updateIsLoading = () => {
-		if (loadedVideos === totalVideos - 1) {
-			setIsLoading(false)
-		}
-	}
+	const handleVideoLoad = () => setLoadedVideos((prev) => prev + 1)
 
 	const handleMiniVdClick = () => {
 		setHasClicked(true)
 
 		setCurrentIndex(upcomingVideoIndex)
-
-		if (upcomingVideoIndex % 2 === 0) {
-			setEvenBgIndex(upcomingVideoIndex)
-		} else {
-			setOddBgIndex(upcomingVideoIndex)
-		}
 	}
 
 	useEffect(() => {
-		updateIsLoading()
+		setIsLoading(loadedVideos < totalVideos - 1)
 	}, [loadedVideos])
 
 	useGSAP(
 		() => {
-			if (hasClicked) {
-				gsap.set('#next-video', { visibility: 'visible' })
+			if (!hasClicked) return
 
-				gsap.to('#next-video', {
-					width: '100%',
-					height: '100%',
-					duration: 1,
-					ease: 'power1.inOut',
-					onStart: () => nextVideoRef.current.play(),
-					onComplete: () => {
-						setIsCurrentIndexEven(currentIndex % 2 === 0)
-					},
-				})
+			const video = isIndexEven ? '#even-bg-video' : '#odd-bg-video'
 
-				gsap.from('#current-video', {
-					transformOrigin: 'center center',
-					scale: 0,
-					duration: 1,
-					delay: 0.5,
-					ease: 'power.inOut',
-				})
-			}
+			gsap.to(video, {
+				visibility: 'visible',
+				width: '100%',
+				height: '100%',
+				duration: 1,
+				ease: 'power1.inOut',
+				onStart: () => {
+					if (isIndexEven) evenVideoRef.current.play()
+					else oddVideoRef.current.play()
+				},
+				onComplete: () => {
+					setIsCurrentIndexEven(isIndexEven)
+
+					if (isIndexEven) setOddBgIndex(upcomingVideoIndex)
+					else setEvenBgIndex(upcomingVideoIndex)
+				},
+			})
+
+			gsap.from('#current-video', {
+				scale: 0,
+				duration: 1,
+				delay: 0.75,
+				ease: 'power.inOut',
+			})
 		},
 		{ dependencies: [currentIndex], revertOnUpdate: true },
 	)
 
 	useGSAP(() => {
-		gsap.set('#video-frame', {
+		gsap.to('#video-frame', {
 			clipPath: 'polygon(14% 0%, 72% 0%, 90% 90%, 0% 100%)',
 			borderRadius: '0 0 40% 10%',
-		})
-
-		gsap.from('#video-frame', {
-			clipPath: 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)',
-			borderRadius: '0 0 0 0',
 			ease: 'power1.inOut',
 			scrollTrigger: {
 				trigger: '#video-frame',
-				start: 'center center',
+				start: 'top top',
 				end: 'bottom center',
 				scrub: true,
 			},
@@ -115,7 +101,7 @@ const Hero = () => {
 			)}
 			<div
 				id="video-frame"
-				className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-blue-50"
+				className="mask-clip-path relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-blue-50"
 			>
 				<div className=" absolute-center z-30 size-64 cursor-pointer overflow-hidden rounded-lg group">
 					<div
@@ -134,36 +120,27 @@ const Hero = () => {
 				</div>
 
 				<video
-					ref={nextVideoRef}
-					src={getVideoSrc(currentIndex)}
-					loop
-					muted
-					id="next-video"
-					className="absolute object-cover object-center absolute-center invisible z-20 size-64"
-					onLoadedData={handleVideoLoad}
-				></video>
-
-				<video
-					src={getVideoSrc(oddBgIndex)}
-					autoPlay
-					loop
-					muted
-					className={`absolute object-cover object-center left-0 top-0 size-full  ${isCurrentIndexEven ? 'invisible' : ''}`}
-					onLoadedData={handleVideoLoad}
-					id="bg-video"
-				></video>
-
-				<video
+					ref={evenVideoRef}
 					src={getVideoSrc(evenBgIndex)}
-					autoPlay
 					loop
 					muted
-					className={`absolute object-cover object-center left-0 top-0 size-full  ${isCurrentIndexEven ? '' : 'invisible'}`}
+					className={`absolute object-cover object-center ${isCurrentIndexEven ? 'left-0 top-0 size-full' : 'absolute-center z-20 size-64 invisible'}`}
 					onLoadedData={handleVideoLoad}
 					id="bg-video"
 				></video>
 
-				<h1 className="special-font hero-heading absolute bottom-5 right-5 z-40 text-blue-50">
+				<video
+					ref={oddVideoRef}
+					src={getVideoSrc(oddBgIndex)}
+					autoPlay={!hasClicked}
+					loop
+					muted
+					className={`absolute object-cover object-center ${isCurrentIndexEven ? 'absolute-center z-20 size-64 invisible' : 'left-0 top-0 size-full'}`}
+					onLoadedData={handleVideoLoad}
+					id="odd-bg-video"
+				></video>
+
+				<h1 className="special-font hero-heading absolute bottom-5 right-5 z-40 text-blue-100">
 					G<b>a</b>ming
 				</h1>
 
@@ -180,7 +157,7 @@ const Hero = () => {
 							id="watch-trailer"
 							title="Watch Trailer"
 							leftIcon={<TiLocationArrow />}
-							containerClass="!bg-lime-300 flex-center gap-1"
+							className="bg-yellow-300 flex-center gap-1"
 						></Button>
 					</div>
 				</div>
