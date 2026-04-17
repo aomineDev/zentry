@@ -1,10 +1,14 @@
-import { useEffect, useRef } from 'react'
-import gsap from 'gsap/all'
+import { useRef } from 'react'
+import gsap, { ScrollTrigger } from 'gsap/all'
+import { useGSAP } from '@gsap/react'
+
+gsap.registerPlugin(ScrollTrigger)
 
 const AnimatedTitle = ({ title, className }) => {
 	const containerRef = useRef(null)
-	useEffect(() => {
-		const ctx = gsap.context(() => {
+
+	useGSAP(
+		() => {
 			const titleAnimation = gsap.timeline({
 				scrollTrigger: {
 					trigger: containerRef.current,
@@ -20,10 +24,9 @@ const AnimatedTitle = ({ title, className }) => {
 				ease: 'power2.inOut',
 				stagger: 0.02,
 			})
-
-			return () => ctx.revert()
-		}, containerRef)
-	})
+		},
+		{ scope: containerRef },
+	)
 
 	return (
 		<div ref={containerRef} className={`animated-title ${className}`}>
