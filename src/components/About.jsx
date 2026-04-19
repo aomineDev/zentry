@@ -17,14 +17,24 @@ const About = () => {
 				scrub: 0.5,
 				pin: true,
 				pinSpacing: true,
+				onLeave: () => gsap.to('body', { backgroundColor: '#dfdff0' }),
+				onEnterBack: () => gsap.set('body', { backgroundColor: 'black' }),
 			},
 		})
 
-		clipAnimation.to('.about-image', {
-			width: '100vw',
-			height: '100vh',
-			borderRadius: 0,
+		clipAnimation.to('body', {
+			backgroundColor: 'black',
 		})
+
+		clipAnimation.to(
+			'.about-image',
+			{
+				width: '100vw',
+				height: '100vh',
+				borderRadius: 0,
+			},
+			'<',
+		)
 	})
 
 	return (

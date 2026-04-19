@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { TiLocationArrow } from 'react-icons/ti'
 import Button from './Button'
 import { useGSAP } from '@gsap/react'
@@ -10,7 +10,6 @@ gsap.registerPlugin(ScrollTrigger)
 const Hero = () => {
 	const [currentIndex, setCurrentIndex] = useState(1)
 	const [hasClicked, setHasClicked] = useState(false)
-	const [isLoading, setIsLoading] = useState(true)
 	const [loadedVideos, setLoadedVideos] = useState(0)
 
 	const [oddBgIndex, setOddBgIndex] = useState(1)
@@ -21,6 +20,7 @@ const Hero = () => {
 	const oddVideoRef = useRef(null)
 
 	const totalVideos = 4
+	const isLoading = loadedVideos < totalVideos - 1
 
 	const isIndexEven = currentIndex % 2 === 0
 
@@ -33,10 +33,6 @@ const Hero = () => {
 
 		setCurrentIndex(upcomingVideoIndex)
 	}
-
-	useEffect(() => {
-		setIsLoading(loadedVideos < totalVideos - 1)
-	}, [loadedVideos])
 
 	useGSAP(
 		() => {
@@ -126,7 +122,7 @@ const Hero = () => {
 					muted
 					className={`absolute object-cover object-center ${isCurrentIndexEven ? 'left-0 top-0 size-full' : 'absolute-center z-20 size-64 invisible'}`}
 					onLoadedData={handleVideoLoad}
-					id="bg-video"
+					id="even-bg-video"
 				></video>
 
 				<video
