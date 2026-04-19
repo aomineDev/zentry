@@ -39,14 +39,20 @@ const BentoTilt = ({ children, className = '' }) => {
 	)
 }
 
-const BentoCard = ({ src, title, description }) => {
+const BentoCard = ({ src, title = '', description }) => {
+	const videoRef = useRef(null)
+
 	return (
-		<div className="relative size-full">
+		<div
+			className="relative size-full"
+			onMouseEnter={() => videoRef.current.play()}
+			onMouseLeave={() => videoRef.current.pause()}
+		>
 			<video
+				ref={videoRef}
 				src={src}
 				loop
 				muted
-				autoPlay
 				className="absolute left-0 top-0 size-full object-cover object-center"
 			/>
 			<div className="relative z-10 flex size-full flex-col p-5 text-blue-50">
@@ -128,13 +134,7 @@ const Features = () => {
 						</div>
 					</BentoTilt>
 					<BentoTilt className="bento-tilt_2">
-						<video
-							src="videos/feature-5.mp4"
-							loop
-							muted
-							autoPlay
-							className="size-full object-cover object-center"
-						></video>
+						<BentoCard src="videos/feature-5.mp4" />
 					</BentoTilt>
 				</div>
 			</div>
